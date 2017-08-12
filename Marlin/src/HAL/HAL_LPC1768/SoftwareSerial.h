@@ -34,16 +34,15 @@ http://arduiniana.org.
 
 #include "arduino.h"
 #include <inttypes.h>
-#include <Stream.h>
+//#include "serial.h"
+ #include <Stream.h>
+#include <Print.h>
 
 /******************************************************************************
 * Definitions
 ******************************************************************************/
 
 #define _SS_MAX_RX_BUFF 64 // RX buffer size
-#ifndef GCC_VERSION
-#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
-#endif
 
 class SoftwareSerial : public Stream
 {
@@ -51,15 +50,10 @@ private:
   // per object data
   uint8_t _receivePin;
   uint8_t _transmitPin;
-  uint32_t _receiveBitMask; // for rx interrupts
+//  uint32_t _receiveBitMask; // for rx interrupts
   uint32_t _receivePort;
   uint32_t _receivePortPin;
-//  volatile uint32_t *_pimd_maskreg;
-//  volatile uint32_t *_pien_maskreg;
-  uint32_t _pimd_en_maskvalue;
-  uint32_t _pien_en_maskvalue;
-  uint32_t _pimd_dis_maskvalue;
-  uint32_t _pien_dis_maskvalue;
+
 
   // Expressed as 4-cycle delays (must never be 0!)
   uint16_t _rx_delay_centering;
@@ -107,6 +101,7 @@ public:
   operator bool() { return true; }
 
   using Print::write;
+  //using HalSerial::write;
 
   // public only for easy access by interrupt handlers
   static inline void handle_interrupt() __attribute__((__always_inline__));

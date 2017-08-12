@@ -29,12 +29,7 @@ The latest version of this library can always be found at
 http://arduiniana.org.
 */
 
-// When set, _DEBUG co-opts pins 11 and 13 for debugging with an
-// oscilloscope or logic analyzer.  Beware: it also slightly modifies
-// the bit times, so don't rely on it too much at high baud rates
-#define _DEBUG 0
-#define _DEBUG_PIN1 11
-#define _DEBUG_PIN2 13
+
 //
 // Includes
 //
@@ -72,40 +67,23 @@ typedef struct _DELAY_TABLE
 static const DELAY_TABLE table[] =
 {
   //baud    |rxcenter|rxintra |rxstop  |tx
-  { 115200,   1,       98,       1,        99,   }, //Done but not good due to instruction cycle error
+  { 250000,   2,      4,       4,       4,   }, //Done but not good due to instruction cycle error
+  { 115200,   4,      8,       8,       8,   }, //Done but not good due to instruction cycle error
   //{ 74880,   69,       139,       62,      162,  }, // estimation
-  { 57600,   100,       185,      1,       208,  }, // Done but not good due to instruction cycle error
-  { 38400,   135,      298,      150,      317,  }, // Done
-  { 19200,   290,      625,      560,      629,  }, // Done
-  { 9600,    600,      1282,     1200,     1266, }, // Done
-  { 4800,    1974,     2559,     2570,     2597, }, // Done
-  { 2400,    4968,     5156,     5170,     5194, }, // Done
-  { 1200,    10144,    10331,    10350,    10388,}, // Done
+//  { 57600,   100,       185,      1,       208,  }, // Done but not good due to instruction cycle error
+  //{ 38400,   13,      26,      26,      26,  }, // Done
+  //{ 19200,   26,      52,      52,      52,  }, // Done
+  { 9600,    52,      104,     104,     104, }, // Done
+  //{ 4800,    104,     208,     208,     208, },
+  //{ 2400,    208,     417,     417,     417, },
+  //{ 1200,    416,    833,      833,     833,},
 };
-
-//
-// Debugging
-//
-// This function generates a brief pulse
-// for debugging or measuring on an oscilloscope.
-inline void DebugPulse(uint8_t pin, uint8_t count)
-{
-#if _DEBUG
-  GPIO_T *port = digitalPinToPort(pin);
-
-  uint32_t val = port->DOUT;
-  while (count--)
-  {
-    port->DOUT |= digitalPinToBitMask(pin); // set HIGH
-    port->DOUT = val;
-  }
-#endif
-}
 
 //
 // Private methods
 //
 
+#if 0
 /* static */
 inline void SoftwareSerial::tunedDelay(uint32_t count) {
 
@@ -122,6 +100,11 @@ inline void SoftwareSerial::tunedDelay(uint32_t count) {
   );
 
 }
+#else
+inline void SoftwareSerial::tunedDelay(uint32_t count) {
+  delayMicroseconds(count);
+}
+#endif
 
 // This function sets the current object as the "listening"
 // one and returns true if it replaces another
@@ -176,14 +159,11 @@ void SoftwareSerial::recv()
 
     // Wait approximately 1/2 of a bit width to "center" the sample
     tunedDelay(_rx_delay_centering);
-    DebugPulse(_DEBUG_PIN2, 1);
-
     // Read each of the 8 bits
     for (uint8_t i=8; i > 0; --i)
     {
 	  tunedDelay(_rx_delay_intrabit);
       d >>= 1;
-      DebugPulse(_DEBUG_PIN2, 1);
       if (rx_pin_read())
         d |= 0x80;
     }
@@ -201,13 +181,9 @@ void SoftwareSerial::recv()
     }
     else
     {
-      DebugPulse(_DEBUG_PIN1, 1);
       _buffer_overflow = true;
     }
-
 	tunedDelay(_rx_delay_stopbit);
-    DebugPulse(_DEBUG_PIN2, 1);
-
     // Re-enable interrupts when we're sure to be inside the stop bit
 	setRxIntMsk(true);//__enable_irq();//
 
@@ -216,7 +192,7 @@ void SoftwareSerial::recv()
 
 uint32_t SoftwareSerial::rx_pin_read()
 {
-  return LPC_GPIO(pin_map[_receivePortPin].port)->FIOPIN & LPC_PIN(pin_map[_receivePortPin].pin) ? 1 : 0;
+  return digitalRead(_receivePin);
 }
 
 //
@@ -231,7 +207,9 @@ inline void SoftwareSerial::handle_interrupt()
     active_object->recv();
   }
 }
-
+extern "C" void intWrapper() {
+  SoftwareSerial::handle_interrupt();
+}
 //
 // Constructor
 //
@@ -304,20 +282,7 @@ void SoftwareSerial::begin(long speed)
     }
   }
 
-  attachInterrupt(_receivePin, this->handle_interrupt, CHANGE);
-
-  /*uint8_t u32Pin = GPIO_Desc[BoardToPinInfo[_receivePin].pin].bit;
-  _pimd_maskreg = &( (digitalPinToPort(_receivePin))-> IMD);
-  _pien_maskreg = &( (digitalPinToPort(_receivePin))-> IEN);
-  _pimd_en_maskvalue = (((GPIO_INT_BOTH_EDGE >> 24) & 0xFFUL) << u32Pin);
-  _pien_en_maskvalue = ((GPIO_INT_BOTH_EDGE & 0xFFFFFFUL) << u32Pin);
-  _pimd_dis_maskvalue = ~(1UL << u32Pin);
-  _pien_dis_maskvalue = ~((0x00010001UL) << u32Pin); */
-
-#if _DEBUG
-  pinMode(_DEBUG_PIN1, OUTPUT);
-  pinMode(_DEBUG_PIN2, OUTPUT);
-#endif
+  attachInterrupt(_receivePin, intWrapper, CHANGE); //this->handle_interrupt, CHANGE);
 
   listen();
   tunedDelay(_tx_delay);
@@ -328,7 +293,6 @@ void SoftwareSerial::setRxIntMsk(bool enable)
 {
     if (enable)
         GpioEnableInt(_receivePort,_receivePin,CHANGE);
-
     else
         GpioDisableInt(_receivePort,_receivePin);
 }
