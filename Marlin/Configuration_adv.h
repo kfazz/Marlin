@@ -1068,6 +1068,7 @@
   //#define Z_IS_TMC2208
   //#define Z2_IS_TMC2208
   //#define E0_IS_TMC2208
+  #define E0_IS_TMC2208
   //#define E1_IS_TMC2208
   //#define E2_IS_TMC2208
   //#define E3_IS_TMC2208
@@ -1081,14 +1082,14 @@
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
   #define INTERPOLATE          1  // Interpolate X/Y/Z_MICROSTEPS to 256
 
-  #define X_CURRENT         1000  // rms current in mA
-  #define X_MICROSTEPS        16  // FULLSTEP..256
+  //#define X_CURRENT         1000  // rms current in mA
+  //#define X_MICROSTEPS        16  // FULLSTEP..256
 
-  #define Y_CURRENT         1000
-  #define Y_MICROSTEPS        16
+  //#define Y_CURRENT         1000
+  //#define Y_MICROSTEPS        16
 
-  #define Z_CURRENT         1000
-  #define Z_MICROSTEPS        16
+  //#define Z_CURRENT         1000
+  //#define Z_MICROSTEPS        16
 
   //#define X2_CURRENT      1000
   //#define X2_MICROSTEPS     16
@@ -1099,8 +1100,8 @@
   //#define Z2_CURRENT      1000
   //#define Z2_MICROSTEPS     16
 
-  //#define E0_CURRENT      1000
-  //#define E0_MICROSTEPS     16
+  #define E0_CURRENT      1000
+  #define E0_MICROSTEPS     16
 
   //#define E1_CURRENT      1000
   //#define E1_MICROSTEPS     16
@@ -1114,7 +1115,7 @@
   //#define E4_CURRENT      1000
   //#define E4_MICROSTEPS     16
 
-  #define STEALTHCHOP
+  //#define STEALTHCHOP
 
   /**
    * You can set your own advanced settings by filling in predefined functions.

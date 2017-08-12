@@ -249,8 +249,13 @@
 //
 #if ENABLED(HAVE_TMC2208)
 
-  #include <SoftwareSerial.h>
-  #include <TMC2208Stepper.h>
+#if ENABLED(IS_REARM)
+    #include "src/HAL/HAL_LPC1768/SoftwareSerial.h"
+    #include "src/HAL/HAL_LPC1768/TMC2208Stepper.h"
+  #else
+    #include <SoftwareSerial.h>
+    #include <TMC2208Stepper.h>
+  #endif
 
   #define _TMC2208_DEFINE(ST) SoftwareSerial stepper##ST##_serial = SoftwareSerial(ST##_SERIAL_RX_PIN, ST##_SERIAL_TX_PIN); \
                                  TMC2208Stepper stepper##ST(&stepper##ST##_serial, ST##_SERIAL_RX_PIN > -1)
@@ -437,4 +442,3 @@
   }
 
 #endif // HAVE_L6470DRIVER
-

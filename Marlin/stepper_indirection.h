@@ -59,7 +59,11 @@
 #endif
 
 #if ENABLED(HAVE_TMC2208)
+#if ENABLED(IS_REARM)
+  #include "src/HAL/HAL_LPC1768/TMC2208Stepper.h"
+#else
   #include <TMC2208Stepper.h>
+#endif
   void tmc2208_init();
 #endif
 
