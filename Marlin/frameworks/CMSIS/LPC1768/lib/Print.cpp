@@ -1,21 +1,21 @@
 /*
  Print.cpp - Base class that provides print() and println()
  Copyright (c) 2008 David A. Mellis.  All right reserved.
- 
+
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
- 
+
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
- 
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- 
+
  Modified 23 November 2006 by David A. Mellis
  Modified 03 August 2015 by Chuck Todd
  */
@@ -29,12 +29,14 @@
 #include <stdarg.h>
 
 #define PrintfEnable  1
+typedef signed short sint16_t;
+typedef signed long sint32_t;
 // Public Methods //////////////////////////////////////////////////////////////
 
 /* default implementation: may be overridden */
 size_t Print::write(const uint8_t *buffer, size_t size)
 {
-	
+
   size_t n = 0;
   while (size--) {
     if (write(*buffer++)) n++;
@@ -46,7 +48,7 @@ size_t Print::write(const uint8_t *buffer, size_t size)
 
 size_t Print::print(const char str[])
 {
-	
+
 	//while(1);
   return write(str);
 }
@@ -192,15 +194,15 @@ size_t Print::printNumber(unsigned long n, uint8_t base) {
   return write(str);
 }
 
-size_t Print::printFloat(double number, uint8_t digits) 
-{ 
+size_t Print::printFloat(double number, uint8_t digits)
+{
   size_t n = 0;
-  
+
   if (isnan(number)) return print("nan");
   if (isinf(number)) return print("inf");
   if (number > 4294967040.0) return print ("ovf");  // constant determined empirically
   if (number <-4294967040.0) return print ("ovf");  // constant determined empirically
-  
+
   // Handle negative numbers
   if (number < 0.0)
   {
@@ -212,7 +214,7 @@ size_t Print::printFloat(double number, uint8_t digits)
   double rounding = 0.5;
   for (uint8_t i=0; i<digits; ++i)
     rounding /= 10.0;
-  
+
   number += rounding;
 
   // Extract the integer part of the number and print it
@@ -222,7 +224,7 @@ size_t Print::printFloat(double number, uint8_t digits)
 
   // Print the decimal point, but only if there are digits beyond
   if (digits > 0) {
-    n += print("."); 
+    n += print(".");
   }
 
   // Extract digits from the remainder one at a time
@@ -231,14 +233,14 @@ size_t Print::printFloat(double number, uint8_t digits)
     remainder *= 10.0;
     int toPrint = int(remainder);
     n += print(toPrint);
-    remainder -= toPrint; 
-  } 
-  
+    remainder -= toPrint;
+  }
+
   return n;
 }
 
 
-#if (PrintfEnable == 1) 
+#if (PrintfEnable == 1)
 size_t Print::printf(const char *argList, ...)
 {
     const char *ptr;
@@ -276,7 +278,7 @@ size_t Print::printf(const char *argList, ...)
             else
             {
                 numOfDigits = 0xff;
-            }                
+            }
 
 
             switch(ch)       /* Decode the type of the argument */
@@ -294,14 +296,14 @@ size_t Print::printf(const char *argList, ...)
             case 'D':
                 num_s32 = va_arg(argp, int);
                 print(num_s32, 10);
-                break;  
+                break;
 
 
             case 'u':
             case 'U':    /* Argument type is of integer, hence read 32bit unsigend data */
                 num_u32 = va_arg(argp, uint32_t);
-                print(num_u32, 10);               
-                break;            
+                print(num_u32, 10);
+                break;
 
 
 
@@ -309,21 +311,21 @@ size_t Print::printf(const char *argList, ...)
             case 'x':
             case 'X':  /* Argument type is of hex, hence hexadecimal data from the argp */
                 num_u32 = va_arg(argp, uint32_t);
-                print(num_u32, 16);                 
+                print(num_u32, 16);
                 break;
 
 
             case 'b':
             case 'B':  /* Argument type is of binary,Read int and convert to binary */
-                num_u32 = va_arg(argp, uint32_t); 
-                print(num_u32, 2);                 
+                num_u32 = va_arg(argp, uint32_t);
+                print(num_u32, 2);
                 break;
 
 
 
             case 'F':
             case 'f': /* Argument type is of float, hence read double data from the argp */
-                floatNum_f32 = va_arg(argp, double);              
+                floatNum_f32 = va_arg(argp, double);
                 printFloat(floatNum_f32,10);
                 break;
 
@@ -332,7 +334,7 @@ size_t Print::printf(const char *argList, ...)
             case 'S':
             case 's': /* Argument type is of string, hence get the pointer to sting passed */
                 str = va_arg(argp, char *);
-                print(str);                
+                print(str);
                 break;
 
 
@@ -353,4 +355,4 @@ size_t Print::printf(const char *argList, ...)
 }
 
 
-#endif    
+#endif
