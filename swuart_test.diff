@@ -1,0 +1,58 @@
+diff --git a/Marlin/src/HAL/HAL_LPC1768/main.cpp b/Marlin/src/HAL/HAL_LPC1768/main.cpp
+index d624b74..deed33e 100644
+--- a/Marlin/src/HAL/HAL_LPC1768/main.cpp
++++ b/Marlin/src/HAL/HAL_LPC1768/main.cpp
+@@ -31,6 +31,9 @@ extern "C" {
+ #include "arduino.h"
+ #include "serial.h"
+ 
++#include "SoftwareSerial.h"
++SoftwareSerial test = SoftwareSerial(63, 6, false);
++
+ static __INLINE uint32_t SysTick_Config(uint32_t ticks) {
+   if (ticks > SysTick_LOAD_RELOAD_Msk)
+     return (1); /* Reload value impossible */
+@@ -53,6 +56,11 @@ void SysTick_Handler(void) {
+ }
+ }
+ 
++void callback()
++{
++  TOGGLE(13); //togle led on ISR
++}
++
+ // runs after clock init and before global static constructors
+ extern "C" void SystemPostInit() {
+   _millis = 0;     // initialise the millisecond counter value;
+@@ -87,8 +95,18 @@ int main(void) {
+   HAL_timer_init();
+ 
+   setup();
++  pinMode(63, INPUT_PULLUP);
++  pinMode(6, OUTPUT);
++//  attachInterrupt(63, callback, FALLING);
++test.begin(250000);
++test.printf("Hello Wooorld.....123\n");
+   while (true) {
+     loop();
++    if (test.available())
++      TOGGLE(13);
++      while(test.available())
++        test.read();
++  test.printf("Hello\n");
+   }
+ }
+ 
+diff --git a/Marlin/src/HAL/HAL_LPC1768/watchdog.cpp b/Marlin/src/HAL/HAL_LPC1768/watchdog.cpp
+index a3b9ac3..310d0ea 100644
+--- a/Marlin/src/HAL/HAL_LPC1768/watchdog.cpp
++++ b/Marlin/src/HAL/HAL_LPC1768/watchdog.cpp
+@@ -45,7 +45,7 @@ uint8_t HAL_get_reset_source (void) {
+ 
+ void watchdog_reset() {
+   WDT_Feed();
+-  TOGGLE(13); // heart beat indicator on Pin13
++  //TOGGLE(13); // heart beat indicator on Pin13
+ }
+ 
+ #endif // USE_WATCHDOG
