@@ -251,54 +251,154 @@
 
 #if ENABLED(IS_REARM)
     #include "src/HAL/HAL_LPC1768/SoftwareSerial.h"
+    #include "src/HAL/HAL_LPC1768/HardwareSerial.h"
     #include "src/HAL/HAL_LPC1768/TMC2208Stepper.h"
+    extern HardwareSerial Serial3;
   #else
     #include <SoftwareSerial.h>
+    #include <HardwareSerial.h>
     #include <TMC2208Stepper.h>
   #endif
+  #include "serial.h"
 
-  #define _TMC2208_DEFINE(ST) SoftwareSerial stepper##ST##_serial = SoftwareSerial(ST##_SERIAL_RX_PIN, ST##_SERIAL_TX_PIN); \
-                                 TMC2208Stepper stepper##ST(&stepper##ST##_serial, ST##_SERIAL_RX_PIN > -1)
+  #define _TMC2208_DEFINE_HARDWARE(ST) TMC2208Stepper stepper##ST(&ST##_HARDWARE_SERIAL)
+   #define _TMC2208_DEFINE_SOFTWARE(ST) SoftwareSerial stepper##ST##_serial = SoftwareSerial(ST##_SERIAL_RX_PIN, ST##_SERIAL_TX_PIN); \
+                                        TMC2208Stepper stepper##ST(&stepper##ST##_serial, ST##_SERIAL_RX_PIN > -1)
 
-  // Stepper objects of TMC2208 steppers used
-  #if ENABLED(X_IS_TMC2208)
-    _TMC2208_DEFINE(X);
-  #endif
-  #if ENABLED(X2_IS_TMC2208)
-    _TMC2208_DEFINE(X2);
-  #endif
-  #if ENABLED(Y_IS_TMC2208)
-    _TMC2208_DEFINE(Y);
-  #endif
-  #if ENABLED(Y2_IS_TMC2208)
-    _TMC2208_DEFINE(Y2);
-  #endif
-  #if ENABLED(Z_IS_TMC2208)
-    _TMC2208_DEFINE(Z);
-  #endif
-  #if ENABLED(Z2_IS_TMC2208)
-    _TMC2208_DEFINE(Z2);
-  #endif
-  #if ENABLED(E0_IS_TMC2208)
-    _TMC2208_DEFINE(E0);
-  #endif
-  #if ENABLED(E1_IS_TMC2208)
-    _TMC2208_DEFINE(E1);
-  #endif
-  #if ENABLED(E2_IS_TMC2208)
-    _TMC2208_DEFINE(E2);
-  #endif
-  #if ENABLED(E3_IS_TMC2208)
-    _TMC2208_DEFINE(E3);
-  #endif
-  #if ENABLED(E4_IS_TMC2208)
-    _TMC2208_DEFINE(E4);
-  #endif
+   // Stepper objects of TMC2208 steppers used
+   #if ENABLED(X_IS_TMC2208)
+     #if defined(X_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(X);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(X);
+     #endif
+   #endif
+   #if ENABLED(X2_IS_TMC2208)
+     #if defined(X2_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(X2);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(X2);
+     #endif
+   #endif
+   #if ENABLED(Y_IS_TMC2208)
+     #if defined(Y_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(Y);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(Y);
+     #endif
+   #endif
+   #if ENABLED(Y2_IS_TMC2208)
+     #if defined(Y2_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(Y2);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(Y2);
+     #endif
+   #endif
+   #if ENABLED(Z_IS_TMC2208)
+     #if defined(Z_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(Z);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(Z);
+     #endif
+   #endif
+   #if ENABLED(Z2_IS_TMC2208)
+     #if defined(Z2_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(Z2);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(Z2);
+     #endif
+   #endif
+   #if ENABLED(E0_IS_TMC2208)
+     #if defined(E0_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(E0);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(E0);
+     #endif
+   #endif
+   #if ENABLED(E1_IS_TMC2208)
+     #if defined(E1_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(E1);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(E1);
+     #endif
+   #endif
+   #if ENABLED(E2_IS_TMC2208)
+     #if defined(E2_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(E2);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(E2);
+     #endif
+   #endif
+   #if ENABLED(E3_IS_TMC2208)
+     #if defined(E3_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(E3);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(E3);
+     #endif
+   #endif
+   #if ENABLED(E4_IS_TMC2208)
+     #if defined(E4_HARDWARE_SERIAL)
+       _TMC2208_DEFINE_HARDWARE(E4);
+     #else
+       _TMC2208_DEFINE_SOFTWARE(E4);
+     #endif
+   #endif
 
+   void tmc2208_serial_begin() {
+     #if ENABLED(X_IS_TMC2208) && defined(X_HARDWARE_SERIAL)
+       X_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(X2_IS_TMC2208) && defined(X2_HARDWARE_SERIAL)
+       X2_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(Y_IS_TMC2208) && defined(Y_HARDWARE_SERIAL)
+       Y_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(Y2_IS_TMC2208) && defined(Y2_HARDWARE_SERIAL)
+       Y2_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(Z_IS_TMC2208) && defined(Z_HARDWARE_SERIAL)
+       Z_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(Z2_IS_TMC2208) && defined(Z2_HARDWARE_SERIAL)
+       Z2_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(E0_IS_TMC2208) && defined(E0_HARDWARE_SERIAL)
+       E0_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(E1_IS_TMC2208) && defined(E1_HARDWARE_SERIAL)
+       E1_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(E2_IS_TMC2208) && defined(E2_HARDWARE_SERIAL)
+       E2_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(E3_IS_TMC2208) && defined(E3_HARDWARE_SERIAL)
+       E3_HARDWARE_SERIAL.begin(250000);
+     #endif
+     #if ENABLED(E4_IS_TMC2208) && defined(E4_HARDWARE_SERIAL)
+       E4_HARDWARE_SERIAL.begin(250000);
+     #endif
+
+   }
   // Use internal reference voltage for current calculations. This is the default.
   // Following values from Trinamic's spreadsheet with values for a NEMA17 (42BYGHW609)
   void tmc2208_init(TMC2208Stepper &st, const uint16_t microsteps) {
+    uint32_t data;
+    bool res = false;
     st.pdn_disable(true); // Use UART
+    //st.senddelay(1);
+    res = st.GCONF(&data);
+    SERIAL_ECHOPAIR(" Res:",  res);
+    SERIAL_ECHOPAIR(" Initial GCONF:",  data);
+  //  res = st.OTP_READ(&data);
+  //  SERIAL_ECHOPAIR(" OTP_READ:",  data);
+    res = st.IOIN(&data);
+    SERIAL_ECHOPAIR(" Res:",  res);
+    SERIAL_ECHOPAIR(" IOIN:",  data);
+    res = st.FACTORY_CONF(&data);
+    SERIAL_ECHOPAIR(" Res:",  res);
+    SERIAL_ECHOPAIR(" FACTORY_CONF:",  data);
+
     st.mstep_reg_select(true); // Select microsteps with UART
     st.I_scale_analog(false);
     st.rms_current(st.getCurrent(), HOLD_MULTIPLIER, R_SENSE);
@@ -309,10 +409,11 @@
     #if DISABLED(STEALTHCHOP)
       st.en_spreadCycle(true);
     #endif
+    res = st.GCONF(&data);
+    SERIAL_ECHOPAIR(" Res:",  res);
+    SERIAL_ECHOPAIR(" Final GCONF:",  data);
   }
-
-  #define _TMC2208_INIT(ST) stepper##ST##_serial.begin(250000); tmc2208_init(stepper##ST, ST##_MICROSTEPS)
-
+#define _TMC2208_INIT(ST) tmc2208_init(stepper##ST, ST##_MICROSTEPS)
   void tmc2208_init() {
     #if ENABLED(X_IS_TMC2208)
       _TMC2208_INIT(X);

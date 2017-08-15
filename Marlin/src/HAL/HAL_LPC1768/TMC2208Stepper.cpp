@@ -177,6 +177,11 @@ void TMC2208Stepper::GSTAT(uint32_t input) {
 	GSTAT_sr = input;
 	UPDATE_REG(GSTAT);
 }
+uint8_t TMC2208Stepper::GSTAT() {
+	uint32_t data = 0;
+	GSTAT(&data);
+	return data;
+}
 
 void TMC2208Stepper::reset(bool B)	{ MOD_REG(GSTAT, RESET); 	}
 void TMC2208Stepper::drv_err(bool B){ MOD_REG(GSTAT, DRV_ERR); 	}
@@ -197,7 +202,7 @@ void TMC2208Stepper::SLAVECONF(uint32_t input) {
 	UPDATE_REG(SLAVECONF);
 }
 bool TMC2208Stepper::SLAVECONF(uint32_t *data) {
-	data = &SLAVECONF_sr;
+	*data = SLAVECONF_sr;
 	return 0;
 }
 void TMC2208Stepper::senddelay(uint8_t B) 	{ MOD_REG(SLAVECONF, SENDDELAY);	}
@@ -247,7 +252,7 @@ void TMC2208Stepper::IHOLD_IRUN(uint32_t input) {
 	UPDATE_REG(IHOLD_IRUN);
 }
 bool TMC2208Stepper::IHOLD_IRUN(uint32_t *data) {
-	data = &IHOLD_IRUN_sr;
+	*data = IHOLD_IRUN_sr;
 	return 0;
 }
 void TMC2208Stepper::ihold(uint8_t B) 		{ MOD_REG(IHOLD_IRUN, IHOLD);		}
@@ -263,7 +268,7 @@ void TMC2208Stepper::TPOWERDOWN(uint32_t input) {
 	UPDATE_REG(TPOWERDOWN);
 }
 bool TMC2208Stepper::TPOWERDOWN(uint32_t *data) {
-	data = &TPOWERDOWN_sr;
+	*data = TPOWERDOWN_sr;
 	return 0;
 }
 
@@ -279,13 +284,11 @@ void TMC2208Stepper::TPWMTHRS(uint32_t input) {
 	UPDATE_REG(TPWMTHRS);
 }
 bool TMC2208Stepper::TPWMTHRS(uint32_t *data) {
-	data = &TPWMTHRS_sr;
+	*data = TPWMTHRS_sr;
 	return 0;
 }
 uint32_t TMC2208Stepper::TPWMTHRS() {
-	uint32_t data = 0;
-	TPWMTHRS(&data);
-	return data;
+	return TPWMTHRS_sr;
 }
 
 // VACTUAL
@@ -294,7 +297,7 @@ void TMC2208Stepper::VACTUAL(uint32_t input) {
 	UPDATE_REG(VACTUAL);
 }
 bool TMC2208Stepper::VACTUAL(uint32_t *data) {
-	data = &VACTUAL_sr;
+	*data = VACTUAL_sr;
 	return 0;
 }
 

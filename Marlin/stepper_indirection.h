@@ -64,6 +64,7 @@
 #else
   #include <TMC2208Stepper.h>
 #endif
+  void tmc2208_serial_begin();
   void tmc2208_init();
 #endif
 

@@ -1,10 +1,6 @@
 #ifndef TMC2208Stepper_h
 #define TMC2208Stepper_h
 
-/*#if defined(ARDUINO) && ARDUINO >= 100
-	#include <Arduino.h>
-#endif*/
-#include <LPC17xx.h>
 #include "arduino.h"
 #include <Stream.h>
 //#include "source/TMC2208Stepper_REGDEFS.h"
@@ -51,6 +47,7 @@ class TMC2208Stepper {
 		void drv_err(bool B);
 		void uv_cp(bool B);
 		bool GSTAT(uint32_t *data);
+		uint8_t GSTAT();
 		bool reset();
 		bool drv_err();
 		bool uv_cp();
@@ -113,7 +110,9 @@ class TMC2208Stepper {
 		void CHOPCONF(uint32_t input);
 		void toff(uint8_t B);
 		void hstrt(uint8_t B);
+		void hysterisis_start(uint8_t value);
 		void hend(uint8_t B);
+		void hysterisis_end(int8_t value);
 		void tbl(uint8_t B);
 		void blank_time(uint8_t B);
 		void vsense(bool B);
@@ -125,7 +124,9 @@ class TMC2208Stepper {
 		bool CHOPCONF(uint32_t *data);
 		uint8_t toff();
 		uint8_t hstrt();
+		uint8_t hysterisis_start();
 		uint8_t hend();
+		int8_t hysterisis_end();
 		uint8_t tbl();
 		uint8_t blank_time();
 		bool vsense();
@@ -181,6 +182,7 @@ class TMC2208Stepper {
 		uint16_t bytesWritten = 0;
 		float Rsense = 0.11;
 		uint16_t replyDelay = 10;
+		bool flag_otpw = false;
 	private:
 		Stream * TMC_SERIAL;
 		void sendDatagram(uint8_t addr, uint32_t regVal, uint8_t len=7);
@@ -200,7 +202,6 @@ class TMC2208Stepper {
 					PWMCONF_sr = 		0x00000000UL,
 					tmp_sr = 			0x00000000UL;
 
-		bool flag_otpw            = false;
 		bool write_only;
 		uint16_t mA_val = 0;
 };

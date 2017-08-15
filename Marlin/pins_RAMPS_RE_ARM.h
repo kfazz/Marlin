@@ -281,9 +281,31 @@
   #define DOGLCD_CS           63  // J5-3 & AUX-2
   #define LCD_PINS_D7         75  // ENET_RXD1
 
-  //
-  // TMC2208 stepper drivers
-  //
+
+  #if ENABLED(HAVE_TMC2208)
+  #include "src/HAL/HAL_LPC1768/HardwareSerial.h"
+  /*
+   * TMC2208 stepper drivers
+   *
+   * Hardware serial communication ports.
+   * If undefined software serial is used according to the pins below
+   */
+  //#define X_HARDWARE_SERIAL  Serial1
+  //#define X2_HARDWARE_SERIAL Serial1
+  //#define Y_HARDWARE_SERIAL  Serial1
+  //#define Y2_HARDWARE_SERIAL Serial1
+  //#define Z_HARDWARE_SERIAL  Serial3
+  //#define Z2_HARDWARE_SERIAL Serial1
+  #define E0_HARDWARE_SERIAL Serial3
+  //#define E1_HARDWARE_SERIAL Serial1
+  //#define E2_HARDWARE_SERIAL Serial1
+  //#define E3_HARDWARE_SERIAL Serial1
+  //#define E3_HARDWARE_SERIAL Serial1
+
+  /*
+   * Software serial
+   */
+
   #define X_SERIAL_TX_PIN    -1
   #define X_SERIAL_RX_PIN    -1
   #define X2_SERIAL_TX_PIN   -1
@@ -309,7 +331,7 @@
   #define E3_SERIAL_RX_PIN   -1
   #define E4_SERIAL_TX_PIN   -1
   #define E4_SERIAL_RX_PIN   -1
-
+#endif
 
   //#define MISO                50  // system defined J3-10 & AUX-3
   //#define MOSI                51  // system defined J3-10 & AUX-3
