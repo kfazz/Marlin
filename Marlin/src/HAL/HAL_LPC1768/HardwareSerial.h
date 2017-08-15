@@ -25,6 +25,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <Stream.h>
 
 extern "C" {
   #include <debug_frmwrk.h>
@@ -53,7 +54,7 @@ extern "C" {
 
 #define UARTRXQUEUESIZE		0x10
 
-class HardwareSerial {
+class HardwareSerial : public Stream {
 private:
 uint8_t PortNum;
 uint32_t baudrate;
@@ -65,11 +66,15 @@ public:
     }
 
   void begin(uint32_t baudrate);
-  char read();
-  void write(char send);
-  uint16_t available();
+  int read();
+  size_t write(uint8_t send);
+  int available();
   void flush();
   void printf(const char *format, ...);
+  int peek() {
+    return 0;
+  };
+
 
   operator bool() {
     return true;
@@ -136,5 +141,9 @@ public:
     }
 
 };
+//extern HardwareSerial Serial0;
+//extern HardwareSerial Serial1;
+//extern HardwareSerial Serial2;
+extern HardwareSerial Serial3;
 
 #endif /* MARLIN_SRC_HAL_HAL_SERIAL_H_ */

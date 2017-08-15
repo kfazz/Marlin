@@ -23,6 +23,8 @@
 #include "../../../macros.h"
 #include "../HAL.h"
 #include "HardwareSerial.h"
+#define UART3 3
+HardwareSerial Serial3 = HardwareSerial(UART3);
 
 volatile uint32_t UART0Status, UART1Status, UART2Status, UART3Status;
 volatile uint8_t UART0TxEmpty = 1, UART1TxEmpty = 1, UART2TxEmpty=1, UART3TxEmpty=1;
@@ -185,7 +187,7 @@ volatile uint8_t dummy;
      }
   }
 
-  char HardwareSerial::read() {
+  int HardwareSerial::read() {
     uint8_t rx;
   	if ( PortNum == 0 )
   	  {
@@ -230,7 +232,7 @@ volatile uint8_t dummy;
   	  return 0;
   }
 
-  void HardwareSerial::write(char send) {
+  size_t HardwareSerial::write(uint8_t send) {
     if ( PortNum == 0 )
      {
    	  /* THRE status, contain valid data */
@@ -264,10 +266,10 @@ volatile uint8_t dummy;
    	  UART3TxEmpty = 0;	/* not empty in the THR until it shifts out */
 
      }
-     return;
+     return 0;
   }
 
-  uint16_t HardwareSerial::available() {
+  int HardwareSerial::available() {
     if ( PortNum == 0 )
 {
   return (UART0RxQueueWritePos + UARTRXQUEUESIZE - UART0RxQueueReadPos) % UARTRXQUEUESIZE;
