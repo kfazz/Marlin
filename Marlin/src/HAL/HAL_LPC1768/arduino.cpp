@@ -122,6 +122,16 @@ void digitalWrite(int pin, int pin_status) {
     LPC_GPIO(pin_map[pin].port)->FIOSET = LPC_PIN(pin_map[pin].pin);
   else
     LPC_GPIO(pin_map[pin].port)->FIOCLR = LPC_PIN(pin_map[pin].pin);
+
+  pinMode(pin, OUTPUT);  // Set pin mode on every write (Arduino version does this)
+
+    /**
+     * Must be done AFTER the output state is set. Doing this before will cause a
+     * 2uS glitch if writing a "1".
+     *
+     * When the Port Direction bit is written to a "1" the output is immediately set
+     * to the value of the FIOPIN bit which is "0" because of power up defaults.
+     */
 }
 
 bool digitalRead(int pin) {
@@ -131,17 +141,34 @@ bool digitalRead(int pin) {
   return LPC_GPIO(pin_map[pin].port)->FIOPIN & LPC_PIN(pin_map[pin].pin) ? 1 : 0;
 }
 
-void analogWrite(int pin, int pin_status) { //todo: Hardware PWM
-  /*
-  if (pin == P2_4) {
-    LPC_PWM1->MR5 = pin_status; // set value
-    LPC_PWM1->LER = _BV(5); // set latch
+
+
+void analogWrite(int pin, int pwm_value) {  // 1 - 254: pwm_value, 0: LOW, 255: HIGH
+
+  extern bool LPC1768_PWM_attach_pin(uint8_t, uint32_t, uint32_t, uint8_t);
+  extern bool LPC1768_PWM_write(uint8_t, uint32_t);
+  extern bool LPC1768_PWM_detach_pin(uint8_t);
+  #define MR0_MARGIN 200       // if channel value too close to MR0 the system locks up
+
+  static bool out_of_PWM_slots = false;
+
+  if (!WITHIN(pin, 0, NUM_DIGITAL_PINS - 1) || pin_map[pin].port == 0xFF)
+    return;
+
+  uint value = MAX(MIN(pwm_value, 255), 0);
+  if (value == 0 || value == 255) {  // treat as digital pin
+    LPC1768_PWM_detach_pin(pin);    // turn off PWM
+    digitalWrite(pin, value);
   }
-  else if (pin == P2_5) {
-    LPC_PWM1->MR6 = pin_status;
-    LPC_PWM1->LER = _BV(6);
+  else {
+    if (LPC1768_PWM_attach_pin(pin, 1, (LPC_PWM1->MR0 - MR0_MARGIN),  0xff))   // locks up if get too close to MR0 value
+      LPC1768_PWM_write(pin, map(value, 1, 254, 1, (LPC_PWM1->MR0 - MR0_MARGIN)));  // map 1-254 onto PWM range
+    else {                                                                 // out of PWM channels
+      if (!out_of_PWM_slots) usb_serial.printf(".\nWARNING - OUT OF PWM CHANNELS\n.\n");  //only warn once
+      out_of_PWM_slots = true;
+      digitalWrite(pin, value);  // treat as a digital pin if out of channels
+    }
   }
-  */
 }
 
 extern bool HAL_adc_finished();
@@ -166,7 +193,6 @@ void eeprom_read_block (void *__dst, const void *__src, size_t __n) { }
 
 void eeprom_update_block (const void *__src, void *__dst, size_t __n) { }
 
-/***/
 char *dtostrf (double __val, signed char __width, unsigned char __prec, char *__s) {
   char format_string[20];
   snprintf(format_string, 20, "%%%d.%df", __width, __prec);
@@ -184,6 +210,10 @@ int32_t random(int32_t min, int32_t max) {
 
 void randomSeed(uint32_t value) {
   srand(value);
+}
+
+int map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max) {
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 #endif // TARGET_LPC1768
