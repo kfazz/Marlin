@@ -306,7 +306,7 @@
    * Software serial
    */
 
-  #define X_SERIAL_TX_PIN    -1
+  #define X_SERIAL_TX_PIN    6
   #define X_SERIAL_RX_PIN    -1
   #define X2_SERIAL_TX_PIN   -1
   #define X2_SERIAL_RX_PIN   -1
@@ -321,8 +321,8 @@
   #define Z2_SERIAL_TX_PIN   -1
   #define Z2_SERIAL_RX_PIN   -1
 
-  #define E0_SERIAL_TX_PIN   6
-  #define E0_SERIAL_RX_PIN   63
+  #define E0_SERIAL_TX_PIN   -1
+  #define E0_SERIAL_RX_PIN   -1
   #define E1_SERIAL_TX_PIN   -1
   #define E1_SERIAL_RX_PIN   -1
   #define E2_SERIAL_TX_PIN   -1
