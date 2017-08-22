@@ -625,7 +625,7 @@
 #define LIN_ADVANCE
 
 #if ENABLED(LIN_ADVANCE)
-  #define LIN_ADVANCE_K 50
+  #define LIN_ADVANCE_K 75
 
   /**
    * Some Slicers produce Gcode with randomly jumping extrusion widths occasionally.
@@ -1080,16 +1080,16 @@
 
   #define R_SENSE           0.11  // R_sense resistor for SilentStepStick2208
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
-  #define INTERPOLATE          0  // Interpolate X/Y/Z_MICROSTEPS to 256
+  #define INTERPOLATE          1  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #define X_CURRENT         1000  // rms current in mA
-  #define X_MICROSTEPS       256  // FULLSTEP..256
+  #define X_MICROSTEPS        32  // FULLSTEP..256
 
   #define Y_CURRENT         1000
-  #define Y_MICROSTEPS       256
+  #define Y_MICROSTEPS        32
 
   #define Z_CURRENT         1000
-  #define Z_MICROSTEPS       256
+  #define Z_MICROSTEPS        32
 
   //#define X2_CURRENT      1000
   //#define X2_MICROSTEPS     16
@@ -1101,7 +1101,7 @@
   //#define Z2_MICROSTEPS     16
 
   #define E0_CURRENT      1000
-  #define E0_MICROSTEPS     256
+  #define E0_MICROSTEPS     32
 
   //#define E1_CURRENT      1000
   //#define E1_MICROSTEPS     16
