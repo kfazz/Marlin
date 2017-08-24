@@ -22,14 +22,6 @@
 
 #ifndef __ARDUINO_H__
 #define __ARDUINO_H__
-#include <stdint.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-
 #include <stddef.h>
 #include <stdint.h>
 #include <math.h>
@@ -79,7 +71,6 @@ void attachInterrupt(uint32_t pin, void (*callback)(void), uint32_t mode);
 void detachInterrupt(uint32_t pin);
 extern "C" void GpioEnableInt(uint32_t port, uint32_t pin, uint32_t mode);
 extern "C" void GpioDisableInt(uint32_t port, uint32_t pin);
-
 
 // Program Memory
 #define pgm_read_ptr(address_short) (*(address_short))

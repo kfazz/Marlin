@@ -22,7 +22,7 @@
  findMulti/findUntil routines written by Jim Leonard/Xuth
  */
 
-
+#include <stdlib.h>
 #include "../../../../src/HAL/HAL_LPC1768/arduino.h"
 
 #include "Stream.h"

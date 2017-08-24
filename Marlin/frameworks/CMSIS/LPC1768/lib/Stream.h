@@ -22,6 +22,7 @@
 #ifndef Stream_h
 #define Stream_h
 
+#include <stdint.h>
 #include <inttypes.h>
 #include "Print.h"
 #include "WString.h"
