@@ -34,6 +34,7 @@ http://arduiniana.org.
 // Includes
 //
 //#include <WInterrupts.h>
+#ifdef TARGET_LPC1768
 #include "../../../macros.h"
 #include "../HAL.h"
 #include <stdint.h>
@@ -396,3 +397,4 @@ int SoftwareSerial::peek()
   // Read from "head"
   return _receive_buffer[_receive_buffer_head];
 }
+#endif
