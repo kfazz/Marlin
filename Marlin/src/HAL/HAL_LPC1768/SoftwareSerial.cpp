@@ -29,12 +29,12 @@ The latest version of this library can always be found at
 http://arduiniana.org.
 */
 
+#ifdef TARGET_LPC1768
 
 //
 // Includes
 //
 //#include <WInterrupts.h>
-#ifdef TARGET_LPC1768
 #include "../../../macros.h"
 #include "../HAL.h"
 #include <stdint.h>
@@ -397,4 +397,5 @@ int SoftwareSerial::peek()
   // Read from "head"
   return _receive_buffer[_receive_buffer_head];
 }
-#endif
+
+#endif // TARGET_LPC1768

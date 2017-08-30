@@ -24,8 +24,6 @@
 
 #include "../../../MarlinConfig.h"
 
-#if ENABLED(USE_WATCHDOG)
-
 #include "lpc17xx_wdt.h"
 #include "watchdog.h"
 
@@ -38,8 +36,8 @@ void HAL_clear_reset_source(void) {
   WDT_ClrTimeOutFlag();
 }
 
-uint8_t HAL_get_reset_source (void) {
-  if(WDT_ReadTimeOutFlag() & 1) return RST_WATCHDOG;
+uint8_t HAL_get_reset_source(void) {
+  if (TEST(WDT_ReadTimeOutFlag(), 0)) return RST_WATCHDOG;
   return RST_POWER_ON;
 }
 
@@ -48,6 +46,4 @@ void watchdog_reset() {
   TOGGLE(13); // heart beat indicator on Pin13
 }
 
-#endif // USE_WATCHDOG
-
-#endif
+#endif // TARGET_LPC1768

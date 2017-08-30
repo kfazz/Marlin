@@ -71,9 +71,9 @@ int freeMemory(){
 void HAL_adc_init(void) {
   LPC_SC->PCONP |= (1 << 12);      // Enable CLOCK for internal ADC controller
   LPC_SC->PCLKSEL0 &= ~(0x3 << 24);
-  LPC_SC->PCLKSEL0 |= (0x1 << 24); // 0: 25MHz, 1: 100MHz, 2: 50MHz, 3: 12.5MHZ to ADC clock divider
+  LPC_SC->PCLKSEL0 |= (0x3 << 24); // 0: 25MHz, 1: 100MHz, 2: 50MHz, 3: 12.5MHZ to ADC clock divider
   LPC_ADC->ADCR = (0 << 0)         // SEL: 0 = no channels selected
-                | (0xFF << 8)      // select slowest clock for A/D conversion 150 - 190 uS for a complete conversion
+                | (0x1 << 8)      // select slowest clock for A/D conversion 150 - 190 uS for a complete conversion
                 | (0 << 16)        // BURST: 0 = software control
                 | (0 << 17)        // CLKS: not applicable
                 | (1 << 21)        // PDN: 1 = operational
