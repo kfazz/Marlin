@@ -622,7 +622,7 @@
  * K=0 means advance disabled.
  * See Marlin documentation for calibration instructions.
  */
-#define LIN_ADVANCE
+//#define LIN_ADVANCE
 
 #if ENABLED(LIN_ADVANCE)
   #define LIN_ADVANCE_K 75
@@ -1100,8 +1100,8 @@
   //#define Z2_CURRENT      1000
   //#define Z2_MICROSTEPS     16
 
-  #define E0_CURRENT      1000
-  #define E0_MICROSTEPS     32
+  #define E0_CURRENT      1200
+  #define E0_MICROSTEPS     16
 
   //#define E1_CURRENT      1000
   //#define E1_MICROSTEPS     16

@@ -285,7 +285,7 @@
 
 // Extruder temperature must be close to target for this long before M109 returns success
 #define TEMP_RESIDENCY_TIME 10  // (seconds)
-#define TEMP_HYSTERESIS 3       // (degC) range of +/- temperatures considered "close" to the target one
+#define TEMP_HYSTERESIS 5       // (degC) range of +/- temperatures considered "close" to the target one
 #define TEMP_WINDOW     1       // (degC) Window around target to start the residency timer x degC early.
 
 // Bed temperature must be close to target for this long before M190 returns success
@@ -351,9 +351,11 @@
   //#define  DEFAULT_Kd 440
 
   //E3DV6 w/ sock
-  #define  DEFAULT_Kp 22.20
-  #define  DEFAULT_Ki 1.63
-  #define  DEFAULT_Kd 75.47
+  #define  DEFAULT_Kp 24.346420
+  #define  DEFAULT_Ki 1.924238
+  #define  DEFAULT_Kd 77.010773
+
+
 
 #endif // PIDTEMP
 
@@ -514,7 +516,7 @@
  * Override with M92
  *                                      X, Y, Z, E0 [, E1[, E2[, E3[, E4]]]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 298 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400,149.6 }//149.6 @ 16 ms
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -999,7 +1001,7 @@
 // M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 // M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
 //
-//#define EEPROM_SETTINGS // Enable for M500 and M501 commands
+#define EEPROM_SETTINGS // Enable for M500 and M501 commands
 //#define DISABLE_M503    // Saves ~2700 bytes of PROGMEM. Disable for release!
 #define EEPROM_CHITCHAT   // Give feedback on EEPROM commands. Disable to save PROGMEM.
 

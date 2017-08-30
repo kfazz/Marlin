@@ -921,7 +921,9 @@ void Stepper::isr() {
     // Disable Timer0 ISRs and enable global ISR again to capture UART events (incoming chars)
     DISABLE_TEMPERATURE_INTERRUPT(); // Temperature ISR
     DISABLE_STEPPER_DRIVER_INTERRUPT();
+    #ifndef CPU_32_BIT
     sei();
+    #endif
 
     // Run main stepping ISR if flagged
     if (!nextMainISR) isr();
@@ -950,9 +952,9 @@ void Stepper::isr() {
 
     // Don't run the ISR faster than possible
          #ifdef CPU_32_BIT
-        // Make sure stepper interrupt does not monopolise CPU by adjusting count to give about 8 us room
+        // Make sure stepper interrupt does not monopolise CPU by adjusting count to give about 16 us room
         uint32_t stepper_timer_count = HAL_timer_get_count(STEP_TIMER_NUM);
-        uint32_t stepper_timer_current_count = HAL_timer_get_current_count(STEP_TIMER_NUM) + 8 * HAL_TICKS_PER_US;
+        uint32_t stepper_timer_current_count = HAL_timer_get_current_count(STEP_TIMER_NUM) + 16 * HAL_TICKS_PER_US;
         HAL_timer_set_count(STEP_TIMER_NUM, stepper_timer_count < stepper_timer_current_count ? stepper_timer_current_count : stepper_timer_count);
       #else
         NOLESS(OCR1A, TCNT1 + 16);

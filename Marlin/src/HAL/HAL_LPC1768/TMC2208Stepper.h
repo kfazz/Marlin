@@ -1,6 +1,8 @@
 #ifndef TMC2208Stepper_h
 #define TMC2208Stepper_h
 
+#include <stdlib.h>
+#include <stdint.h>
 #include "arduino.h"
 #include <Stream.h>
 //#include "source/TMC2208Stepper_REGDEFS.h"
