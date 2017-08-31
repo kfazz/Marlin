@@ -91,6 +91,12 @@ int main(void) {
   LPC1768_PWM_init();
 
   setup();
+  pinMode(0, OUTPUT);
+  pinMode(63,OUTPUT);
+  pinMode(49, OUTPUT);
+  digitalWrite(0,LOW);
+  digitalWrite(63,LOW);
+  digitalWrite(49,LOW);
   while (true) {
     loop();
   }
