@@ -61,9 +61,9 @@ Temperature thermalManager;
 
 float Temperature::current_temperature[HOTENDS] = { 0.0 },
       Temperature::current_temperature_bed = 0.0;
-int16_t Temperature::current_temperature_raw[HOTENDS] = { 0 },
-        Temperature::target_temperature[HOTENDS] = { 0 },
+int32_t Temperature::current_temperature_raw[HOTENDS] = { 0 },
         Temperature::current_temperature_bed_raw = 0;
+int16_t  Temperature::target_temperature[HOTENDS] = { 0 };
 
 #if HAS_HEATER_BED
   int16_t Temperature::target_temperature_bed = 0;
@@ -150,10 +150,10 @@ uint16_t Temperature::raw_temp_value[MAX_EXTRUDERS] = { 0 },
          Temperature::raw_temp_bed_value = 0;
 
 // Init min and max temp with extreme values to prevent false errors during startup
-int16_t Temperature::minttemp_raw[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_RAW_LO_TEMP , HEATER_1_RAW_LO_TEMP , HEATER_2_RAW_LO_TEMP, HEATER_3_RAW_LO_TEMP, HEATER_4_RAW_LO_TEMP),
+int32_t Temperature::minttemp_raw[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_RAW_LO_TEMP , HEATER_1_RAW_LO_TEMP , HEATER_2_RAW_LO_TEMP, HEATER_3_RAW_LO_TEMP, HEATER_4_RAW_LO_TEMP),
         Temperature::maxttemp_raw[HOTENDS] = ARRAY_BY_HOTENDS(HEATER_0_RAW_HI_TEMP , HEATER_1_RAW_HI_TEMP , HEATER_2_RAW_HI_TEMP, HEATER_3_RAW_HI_TEMP, HEATER_4_RAW_HI_TEMP),
         Temperature::minttemp[HOTENDS] = { 0 },
-        Temperature::maxttemp[HOTENDS] = ARRAY_BY_HOTENDS1(16383);
+        Temperature::maxttemp[HOTENDS] = ARRAY_BY_HOTENDS1(65520);
 
 #ifdef MAX_CONSECUTIVE_LOW_TEMPERATURE_ERROR_ALLOWED
   uint8_t Temperature::consecutive_low_temperature_error[HOTENDS] = { 0 };
@@ -845,6 +845,7 @@ void Temperature::manage_heater() {
 // Derived from RepRap FiveD extruder::getTemperature()
 // For hot end temperature measurement.
 float Temperature::analog2temp(int raw, uint8_t e) {
+  uint16_t raw2 = (uint16_t) raw;
   #if ENABLED(TEMP_SENSOR_1_AS_REDUNDANT)
     if (e > HOTENDS)
   #else
@@ -861,12 +862,38 @@ float Temperature::analog2temp(int raw, uint8_t e) {
   #if ENABLED(HEATER_0_USES_MAX6675)
     if (e == 0) return 0.25 * raw;
   #endif
+  raw2 = raw2 >> 4;
+int r0 = 100000; //nominal res @
+int t0 = 25; // 25 deg C
+int r1 = 0;
+float r2 = 4700; //4.7k pullup
+int beta = 4267; //from 104-gt2 datasheet
+float c1 = 0.000811290160145459F;
+float c2 = 0.000211355789144265F;
+float c3 = 7.17614730463848e-08F;
 
+float r;
+  r = r2 / ((4095.0F / raw2) - 1.0F);
+  if (r1 > 0.0F) r = (r1 * r) / (r1 - r);
+
+  float l = logf(r);
+  float t= (1.0F / (c1 + c2 * l + c3 * powf(l,3))) - 273.15F;
+  /*
+  SERIAL_ECHO_START();
+  SERIAL_ECHOPGM("analog2temp: ");
+  SERIAL_ECHOPAIR(" ;  Raw:", raw2);
+  SERIAL_ECHOPAIR(" ;  Res:", r);
+  SERIAL_ECHOPAIR(" ;  Cooked:", t);
+  SERIAL_EOL();
+  */
+  return t;
+
+/*
   if (heater_ttbl_map[e] != NULL) {
     float celsius = 0;
     uint8_t i;
     short(*tt)[][2] = (short(*)[][2])(heater_ttbl_map[e]);
-
+      raw = raw /4;
     for (i = 1; i < heater_ttbllen_map[e]; i++) {
       if (PGM_RD_W((*tt)[i][0]) > raw) {
         celsius = PGM_RD_W((*tt)[i - 1][1]) +
@@ -877,46 +904,47 @@ float Temperature::analog2temp(int raw, uint8_t e) {
       }
     }
 
+
     // Overflow: Set to last value in the table
     if (i == heater_ttbllen_map[e]) celsius = PGM_RD_W((*tt)[i - 1][1]);
 
     return celsius;
   }
-  return ((raw * ((5.0 * 100.0) / 1024.0) / OVERSAMPLENR) * (TEMP_SENSOR_AD595_GAIN)) + TEMP_SENSOR_AD595_OFFSET;
+  return ((raw * ((5.0 * 100.0) / ADCMAXVAL) / OVERSAMPLENR) * (TEMP_SENSOR_AD595_GAIN)) + TEMP_SENSOR_AD595_OFFSET;
+  */
 }
 
 // Derived from RepRap FiveD extruder::getTemperature()
 // For bed temperature measurement.
 float Temperature::analog2tempBed(const int raw) {
-  #if ENABLED(BED_USES_THERMISTOR)
-    float celsius = 0;
-    byte i;
+//  int raw2 = raw >> 4;
+  uint16_t raw2 = (uint16_t) raw;
+  raw2 = raw2 >>4;
+float r0 = 100000; //nominal res @
+float t0 = 25; // 25 deg C
+int r1 = 0;
+float r2 = 4700; //4.7k pullup
+int beta = 4267; //from 104-gt2 datasheet
+float c1 = 0.000811290160145459F;
+float c2 = 0.000211355789144265F;
+float c3 = 7.17614730463848e-08F;
 
-    for (i = 1; i < BEDTEMPTABLE_LEN; i++) {
-      if (PGM_RD_W(BEDTEMPTABLE[i][0]) > raw) {
-        celsius  = PGM_RD_W(BEDTEMPTABLE[i - 1][1]) +
-                   (raw - PGM_RD_W(BEDTEMPTABLE[i - 1][0])) *
-                   (float)(PGM_RD_W(BEDTEMPTABLE[i][1]) - PGM_RD_W(BEDTEMPTABLE[i - 1][1])) /
-                   (float)(PGM_RD_W(BEDTEMPTABLE[i][0]) - PGM_RD_W(BEDTEMPTABLE[i - 1][0]));
-        break;
-      }
-    }
+float r;
+  r = r2 / ((4095.0F / raw2) - 1.0F);
+  if (r1 > 0.0F) r = (r1 * r) / (r1 - r);
 
-    // Overflow: Set to last value in the table
-    if (i == BEDTEMPTABLE_LEN) celsius = PGM_RD_W(BEDTEMPTABLE[i - 1][1]);
+  float l = logf(r);
+  float t= (1.0F / (c1 + c2 * l + c3 * powf(l,3))) - 273.15F;
+  /*
+  SERIAL_ECHO_START();
+  SERIAL_ECHOPGM("analog2tempBed: ");
+  SERIAL_ECHOPAIR(" ;  Raw:", raw2);
+  SERIAL_ECHOPAIR(" ;  Res:", r);
+  SERIAL_ECHOPAIR(" ;  Cooked:", t);
+  SERIAL_EOL();
+  */
+  return t;
 
-    return celsius;
-
-  #elif defined(BED_USES_AD595)
-
-    return ((raw * ((5.0 * 100.0) / 1024.0) / OVERSAMPLENR) * (TEMP_SENSOR_AD595_GAIN)) + TEMP_SENSOR_AD595_OFFSET;
-
-  #else
-
-    UNUSED(raw);
-    return 0;
-
-  #endif
 }
 
 /**
@@ -1927,7 +1955,17 @@ void Temperature::isr() {
         HAL_START_ADC(TEMP_0_PIN);
         break;
       case MeasureTemp_0:
-        raw_temp_value[0] += HAL_READ_ADC;
+      int32_t reading;
+      reading  = HAL_READ_ADC;
+      if (reading>3950) {
+      SERIAL_ECHO_START();
+      SERIAL_ECHOPAIR(" ;  HAL_READ_ADC Large Result:", reading);
+      SERIAL_EOL();
+    }
+        if (reading<=3950)
+        raw_temp_value[0] += reading;
+        else
+          temp_count--;
         break;
     #endif
 
@@ -2050,8 +2088,17 @@ void Temperature::isr() {
     };
 
     for (uint8_t e = 0; e < COUNT(temp_dir); e++) {
-      const int16_t tdir = temp_dir[e], rawtemp = current_temperature_raw[e] * tdir;
-      if (rawtemp > maxttemp_raw[e] * tdir && target_temperature[e] > 0) max_temp_error(e);
+      const int32_t tdir = temp_dir[e], rawtemp = current_temperature_raw[e] * tdir;
+      //if (rawtemp > maxttemp_raw[e] * tdir && target_temperature[e] > 0) max_temp_error(e);
+      if (rawtemp > maxttemp_raw[e] * tdir && target_temperature[e] > 0) {
+
+      SERIAL_ECHO_START();
+      SERIAL_ECHOPGM("MAXTEMP_ERROR: ");
+      SERIAL_ECHOPAIR(" ;  Rawtemp (summed):", rawtemp);
+      SERIAL_ECHOPAIR(" ;  maxttemp_raw[e]:", maxttemp_raw[e]);
+      SERIAL_ECHOPAIR(" ;  tdir:", tdir);
+      SERIAL_EOL();
+    }
       if (rawtemp < minttemp_raw[e] * tdir && !is_preheating(e) && target_temperature[e] > 0) {
         #ifdef MAX_CONSECUTIVE_LOW_TEMPERATURE_ERROR_ALLOWED
           if (++consecutive_low_temperature_error[e] >= MAX_CONSECUTIVE_LOW_TEMPERATURE_ERROR_ALLOWED)
@@ -2070,8 +2117,16 @@ void Temperature::isr() {
       #else
         #define GEBED >=
       #endif
-      if (current_temperature_bed_raw GEBED bed_maxttemp_raw && target_temperature_bed > 0) max_temp_error(-1);
-      if (bed_minttemp_raw GEBED current_temperature_bed_raw && target_temperature_bed > 0) min_temp_error(-1);
+    //  if (current_temperature_bed_raw GEBED bed_maxttemp_raw && target_temperature_bed > 0) max_temp_error(-1);
+    //  if (bed_minttemp_raw GEBED current_temperature_bed_raw && target_temperature_bed > 0) min_temp_error(-1);
+if (current_temperature_bed_raw GEBED bed_maxttemp_raw && target_temperature_bed > 0) {
+    SERIAL_ECHOPGM("MAXTEMP_ERROR: ");
+    SERIAL_ECHOPAIR(" ;  current_temp_bed_raw:", current_temperature_bed_raw);
+    SERIAL_ECHOPAIR(" ;  bed_maxttemp_raw:", bed_maxttemp_raw);
+    SERIAL_ECHOPAIR(" ;  target_temperature_bed:", target_temperature_bed);
+    SERIAL_EOL();
+  }
+
     #endif
 
   } // temp_count >= OVERSAMPLENR

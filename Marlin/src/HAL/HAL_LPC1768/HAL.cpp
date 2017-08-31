@@ -134,7 +134,8 @@ uint16_t HAL_adc_get_result(void) {
   uint32_t data = LPC_ADC->ADGDR;
   LPC_ADC->ADCR &= ~(1 << 24); //stop conversion
   if ( data & ADC_OVERRUN ) return 0;
-  return ((data >> 6) & 0x3ff); //10bit
+  return ((data >> 4) & 0xfff); //12bit
+
 }
 
 #define SBIT_CNTEN     0
