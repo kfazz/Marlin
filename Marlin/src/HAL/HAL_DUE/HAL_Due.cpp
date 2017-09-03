@@ -94,8 +94,8 @@ uint8_t HAL_get_reset_source (void) {
 }
 
 void _delay_ms(int delay_ms) {
-  //todo: port for Due?
-  delay (delay_ms);
+  // todo: port for Due?
+  delay(delay_ms);
 }
 
 extern "C" {
@@ -112,7 +112,7 @@ int freeMemory() {
 // ADC
 // --------------------------------------------------------------------------
 
-void HAL_adc_start_conversion (uint8_t adc_pin) {
+void HAL_adc_start_conversion(uint8_t adc_pin) {
   HAL_adc_result = analogRead(adc_pin);
 }
 
