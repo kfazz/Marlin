@@ -115,7 +115,7 @@ void HAL_adc_enable_channel(int pin) {
       break;
   };
 }
-
+#if 0
 void HAL_adc_start_conversion(uint8_t adc_pin) {
   if(  (adc_pin >= NUM_ANALOG_INPUTS) || (adc_pin_map[adc_pin].port == 0xFF) ) {
     usb_serial.printf("HAL: HAL_adc_start_conversion: no pinmap for %d\n",adc_pin);
@@ -136,6 +136,51 @@ uint16_t HAL_adc_get_result(void) {
   if ( data & ADC_OVERRUN ) return 0;
   return ((data >> 4) & 0xfff); //12bit
 
+}
+#endif
+
+uint8_t active_adc = 0;
+void HAL_adc_start_conversion(uint8_t adc_pin) {
+  if(  (adc_pin >= NUM_ANALOG_INPUTS) || (adc_pin_map[adc_pin].port == 0xFF) ) {
+    usb_serial.printf("HAL: HAL_adc_start_conversion: no pinmap for %d\n",adc_pin);
+    return;
+  }
+  active_adc = adc_pin;
+  LPC_ADC->ADCR &= ~0xFF;                                // Reset
+  LPC_ADC->ADCR |= ( 0x01 << adc_pin_map[adc_pin].adc ); // Select Channel
+  LPC_ADC->ADCR |= ( 0x01 << 24 );                       // start conversion
+}
+
+struct MedianFilter {
+  uint16_t values[3];
+  uint8_t next_val;
+  MedianFilter() {
+    next_val = 0;
+    values[0] = values[1] = values[2] = 0;
+  }
+  uint16_t update(uint16_t value) {
+    values[next_val++] = value;
+    next_val = next_val % 3;
+    return max(min(values[0], values[1]), min(max(values[0], values[1]), values[2]));
+  }
+};
+
+uint16_t HAL_adc_lowpass_filter(uint16_t value) {
+  const uint8_t k_data_shift = 4;
+  static uint32_t data_delay[NUM_ANALOG_INPUTS] = {0};
+  static MedianFilter median_filter[NUM_ANALOG_INPUTS];
+  value = median_filter[active_adc].update(value);
+  uint32_t &active_filter = data_delay[active_adc];
+  active_filter = active_filter - (active_filter >> k_data_shift) + value;
+  return active_filter >> k_data_shift;
+}
+
+uint16_t HAL_adc_get_result(void) {
+  uint32_t data = LPC_ADC->ADGDR;
+  LPC_ADC->ADCR &= ~(1 << 24); //stop conversion
+  if ( data & ADC_OVERRUN ) return 0;
+  if (data==4095) return 4095;
+  return (((HAL_adc_lowpass_filter(data) >> 4) & 0xfff)); //10bit
 }
 
 #define SBIT_CNTEN     0
