@@ -106,9 +106,9 @@ class Temperature {
 
     static float current_temperature[HOTENDS],
                  current_temperature_bed;
-    static int16_t current_temperature_raw[HOTENDS],
-                   target_temperature[HOTENDS],
+    static int32_t current_temperature_raw[HOTENDS],
                    current_temperature_bed_raw;
+    static int16_t target_temperature[HOTENDS];
 
     #if HAS_HEATER_BED
       static int16_t target_temperature_bed;
@@ -225,11 +225,11 @@ class Temperature {
       static millis_t next_bed_check_ms;
     #endif
 
-    static uint16_t raw_temp_value[MAX_EXTRUDERS],
+    static uint32_t raw_temp_value[MAX_EXTRUDERS],
                     raw_temp_bed_value;
 
     // Init min and max temp with extreme values to prevent false errors during startup
-    static int16_t minttemp_raw[HOTENDS],
+    static int32_t minttemp_raw[HOTENDS],
                    maxttemp_raw[HOTENDS],
                    minttemp[HOTENDS],
                    maxttemp[HOTENDS];
