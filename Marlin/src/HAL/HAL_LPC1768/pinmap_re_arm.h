@@ -165,11 +165,11 @@ const pin_data pin_map[] = { // pin map for variable pin function
   {0xFF,0xFF},  //  DIO22  N/C
   {0xFF,0xFF},  //  DIO23  LCD_PINS_D4       SCK_PIN(SCLK0)   J3-9                           AUX-3
   {0,4},        //  DIO24  E0_ENABLE_PIN
-  {0xFF,0xFF},  //  DIO25  N/C
+  {0,18},       //  DIO25  LCD D5
   {2,0},        //  DIO26  E0_STEP_PIN
-  {0xFF,0xFF},  //  DIO27  N/C
+  {2,6},        //  DIO27  N/C
   {0,5},        //  DIO28  E0_DIR_PIN
-  {0xFF,0xFF},  //  DIO29  N/C
+  {0,17},  //  DIO29  N/C
   {4,29},       //  DIO30  E1_ENABLE_PIN
   {3,26},       //  DIO31  BTN_EN1
   {0xFF,0xFF},  //  DIO32  N/C
@@ -297,6 +297,15 @@ const pin_data pin_map[] = { // pin map for variable pin function
 //#define E0_STEP_PIN               26  //
 #define DIO26_PORT 2
 #define DIO26_PIN 0
+//#define LCD                25  //
+#define DIO25_PORT 0
+#define DIO25_PIN 18
+//#define E0_DIR_PIN                28  //
+#define DIO27_PORT 2
+#define DIO27_PIN 6
+//#define E0_DIR_PIN                28  //
+#define DIO29_PORT 0
+#define DIO29_PIN 18
 //#define E0_DIR_PIN                28  //
 #define DIO28_PORT 0
 #define DIO28_PIN 5

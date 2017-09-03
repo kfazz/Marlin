@@ -204,7 +204,9 @@ uint32_t CDC_SendBreak(unsigned short wDurationOfBreak) {
  Return Value: none
  *---------------------------------------------------------------------------*/
 void CDC_BulkIn(void) {
+  __disable_irq();
   uint32_t numBytesAvail = usb_serial.transmit_buffer.available();
+  __enable_irq();
 
   if (numBytesAvail > 0) {
     numBytesAvail = numBytesAvail > (USB_CDC_BUFSIZE - 1) ? (USB_CDC_BUFSIZE - 1) : numBytesAvail;

@@ -918,7 +918,9 @@ void Stepper::isr() {
     // Disable Timer0 ISRs and enable global ISR again to capture UART events (incoming chars)
     DISABLE_TEMPERATURE_INTERRUPT(); // Temperature ISR
     DISABLE_STEPPER_DRIVER_INTERRUPT();
+    #ifndef CPU_32_BIT
     sei();
+    #endif
 
     // Run main stepping ISR if flagged
     if (!nextMainISR) isr();
@@ -990,6 +992,11 @@ void Stepper::init() {
   // Init TMC2130 Steppers
   #if ENABLED(HAVE_TMC2130)
     tmc2130_init();
+  #endif
+
+  // Init TMC2208 Steppers
+  #if ENABLED(HAVE_TMC2208)
+    tmc2208_init();
   #endif
 
   // Init L6470 Steppers
