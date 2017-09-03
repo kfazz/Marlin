@@ -146,7 +146,7 @@ volatile bool Temperature::temp_meas_ready = false;
   millis_t Temperature::next_bed_check_ms;
 #endif
 
-uint16_t Temperature::raw_temp_value[MAX_EXTRUDERS] = { 0 },
+uint32_t Temperature::raw_temp_value[MAX_EXTRUDERS] = { 0 },
          Temperature::raw_temp_bed_value = 0;
 
 // Init min and max temp with extreme values to prevent false errors during startup
@@ -1957,12 +1957,12 @@ void Temperature::isr() {
       case MeasureTemp_0:
       int32_t reading;
       reading  = HAL_READ_ADC;
-      if (reading>3950) {
+      if (reading>4050) {
       SERIAL_ECHO_START();
       SERIAL_ECHOPAIR(" ;  HAL_READ_ADC Large Result:", reading);
       SERIAL_EOL();
     }
-        if (reading<=3950)
+        if (reading<=4050)
         raw_temp_value[0] += reading;
         else
           temp_count--;
@@ -1974,7 +1974,17 @@ void Temperature::isr() {
         HAL_START_ADC(TEMP_BED_PIN);
         break;
       case MeasureTemp_BED:
-        raw_temp_bed_value += HAL_READ_ADC;
+      int32_t reading_bed;
+      reading_bed  = HAL_READ_ADC;
+      if (reading_bed>4050) {
+      SERIAL_ECHO_START();
+      SERIAL_ECHOPAIR(" ;  HAL_READ_ADC Bed Large Result:", reading_bed);
+      SERIAL_EOL();
+    }
+        if (reading_bed<=4050)
+        raw_temp_bed_value += reading_bed;
+        else
+          temp_count--; //discard sample
         break;
     #endif
 
