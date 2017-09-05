@@ -351,9 +351,18 @@
   //#define  DEFAULT_Kd 440
 
   //E3DV6 w/ sock
-  #define  DEFAULT_Kp 24.346420
-  #define  DEFAULT_Ki 1.924238
-  #define  DEFAULT_Kd 77.010773
+  //#define  DEFAULT_Kp 24.346420
+  //#define  DEFAULT_Ki 1.924238
+  //#define  DEFAULT_Kd 77.010773
+
+  //#define  DEFAULT_Kp 23.666779
+  //#define  DEFAULT_Ki 1.882424
+  //#define  DEFAULT_Kd 74.387642
+
+  #define  DEFAULT_Kp 23.862259
+  #define  DEFAULT_Ki 1.975516
+  #define  DEFAULT_Kd 72.058060
+
 
 
 
@@ -371,7 +380,7 @@
 // If your configuration is significantly different than this and you don't understand the issues involved, you probably
 // shouldn't use bed PID until someone else verifies your hardware works.
 // If this is enabled, find your own PID constants below.
-//#define PIDTEMPBED
+#define PIDTEMPBED
 
 //#define BED_LIMIT_SWITCHING
 
@@ -387,9 +396,14 @@
 
   //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   //from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define  DEFAULT_bedKp 10.00
-  #define  DEFAULT_bedKi .023
-  #define  DEFAULT_bedKd 305.4
+//  #define  DEFAULT_bedKp 10.00
+//  #define  DEFAULT_bedKi .023
+//  #define  DEFAULT_bedKd 305.4
+
+ #define  DEFAULT_bedKp 385.314941
+#define  DEFAULT_bedKi 57.283123
+#define  DEFAULT_bedKd 647.955261
+
 
   //120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   //from pidautotune
@@ -637,7 +651,7 @@
  * in current flowing through the wires).  This is likely most useful to users of the
  * BLTouch probe, but may also help those with inductive or other probe types.
  */
-#define PROBING_HEATERS_OFF       // Turn heaters off when probing
+//#define PROBING_HEATERS_OFF       // Turn heaters off when probing
 //#define PROBING_FANS_OFF          // Turn fans off when probing
 
 // A probe that is deployed and stowed with a solenoid pin (SOL1_PIN)
@@ -1507,13 +1521,13 @@
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
 // However, control resolution will be halved for each increment;
 // at zero value, there are 128 effective control positions.
-#define SOFT_PWM_SCALE 0
+#define SOFT_PWM_SCALE 5
 
 // If SOFT_PWM_SCALE is set to a value higher than 0, dithering can
 // be used to mitigate the associated resolution loss. If enabled,
 // some of the PWM cycles are stretched so on average the desired
 // duty cycle is attained.
-//#define SOFT_PWM_DITHER
+#define SOFT_PWM_DITHER
 
 // Temperature status LEDs that display the hotend and bed temperature.
 // If all hotends, bed temperature, and target temperature are under 54C

@@ -344,9 +344,15 @@
      #endif
    #endif
 
+#define  _TMC2208_SOFTWARE_BEGIN(ST) stepper##ST##_serial.begin(115200);
+
    void tmc2208_serial_begin() {
-     #if ENABLED(X_IS_TMC2208) && defined(X_HARDWARE_SERIAL)
-       X_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(X_IS_TMC2208)
+       #if defined(X_HARDWARE_SERIAL)
+         X_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(X);
+       #endif
      #endif
      #if ENABLED(X2_IS_TMC2208) && defined(X2_HARDWARE_SERIAL)
        X2_HARDWARE_SERIAL.begin(250000);

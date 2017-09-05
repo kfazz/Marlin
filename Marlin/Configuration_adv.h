@@ -625,7 +625,7 @@
 //#define LIN_ADVANCE
 
 #if ENABLED(LIN_ADVANCE)
-  #define LIN_ADVANCE_K 75
+  #define LIN_ADVANCE_K 25
 
   /**
    * Some Slicers produce Gcode with randomly jumping extrusion widths occasionally.
@@ -1061,11 +1061,11 @@
 
 #if ENABLED(HAVE_TMC2208)
   // CHOOSE YOUR MOTORS HERE, THIS IS MANDATORY
-  //#define X_IS_TMC2208
+  #define X_IS_TMC2208
   //#define X2_IS_TMC2208
-  //#define Y_IS_TMC2208
+  #define Y_IS_TMC2208
   //#define Y2_IS_TMC2208
-  //#define Z_IS_TMC2208
+  #define Z_IS_TMC2208
   //#define Z2_IS_TMC2208
   //#define E0_IS_TMC2208
   #define E0_IS_TMC2208
@@ -1083,7 +1083,10 @@
   #define INTERPOLATE          1  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #define X_CURRENT         1000  // rms current in mA
-  #define X_MICROSTEPS        32  // FULLSTEP..256
+  #define X_MICROSTEPS        32 // FULLSTEP..256
+
+				//X, Y, Z axes all share a single serial wire attached to pin 63
+				//for these axes readback isn't used.
 
   #define Y_CURRENT         1000
   #define Y_MICROSTEPS        32
