@@ -354,37 +354,76 @@
          _TMC2208_SOFTWARE_BEGIN(X);
        #endif
      #endif
-     #if ENABLED(X2_IS_TMC2208) && defined(X2_HARDWARE_SERIAL)
-       X2_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(X2_IS_TMC2208)
+       #if defined(X2_HARDWARE_SERIAL)
+         X2_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(X2);
+       #endif
      #endif
-     #if ENABLED(Y_IS_TMC2208) && defined(Y_HARDWARE_SERIAL)
-       Y_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(Y_IS_TMC2208)
+       #if defined(Y_HARDWARE_SERIAL)
+         Y_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(Y);
+       #endif
      #endif
-     #if ENABLED(Y2_IS_TMC2208) && defined(Y2_HARDWARE_SERIAL)
-       Y2_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(Y2_IS_TMC2208)
+       #if defined(Y2_HARDWARE_SERIAL)
+         Y2_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(Y2);
+       #endif
      #endif
-     #if ENABLED(Z_IS_TMC2208) && defined(Z_HARDWARE_SERIAL)
-       Z_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(Z_IS_TMC2208)
+       #if defined(Z_HARDWARE_SERIAL)
+         Z_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(Z);
+       #endif
      #endif
-     #if ENABLED(Z2_IS_TMC2208) && defined(Z2_HARDWARE_SERIAL)
-       Z2_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(Z2_IS_TMC2208)
+       #if defined(Z2_HARDWARE_SERIAL)
+         Z2_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(Z2);
+       #endif
      #endif
-     #if ENABLED(E0_IS_TMC2208) && defined(E0_HARDWARE_SERIAL)
-       E0_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(E0_IS_TMC2208)
+       #if defined(E0_HARDWARE_SERIAL)
+         E0_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(E0);
+       #endif
      #endif
-     #if ENABLED(E1_IS_TMC2208) && defined(E1_HARDWARE_SERIAL)
-       E1_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(E1_IS_TMC2208)
+       #if defined(E1_HARDWARE_SERIAL)
+         E1_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(E1);
+       #endif
      #endif
-     #if ENABLED(E2_IS_TMC2208) && defined(E2_HARDWARE_SERIAL)
-       E2_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(E2_IS_TMC2208)
+       #if defined(E2_HARDWARE_SERIAL)
+         E2_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(E2);
+       #endif
      #endif
-     #if ENABLED(E3_IS_TMC2208) && defined(E3_HARDWARE_SERIAL)
-       E3_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(E3_IS_TMC2208)
+       #if defined(E3_HARDWARE_SERIAL)
+         E3_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(E3);
+       #endif
      #endif
-     #if ENABLED(E4_IS_TMC2208) && defined(E4_HARDWARE_SERIAL)
-       E4_HARDWARE_SERIAL.begin(250000);
+     #if ENABLED(E4_IS_TMC2208)
+       #if defined(E4_HARDWARE_SERIAL)
+         E4_HARDWARE_SERIAL.begin(250000);
+       #else
+         _TMC2208_SOFTWARE_BEGIN(E4);
+       #endif
      #endif
-
    }
   // Use internal reference voltage for current calculations. This is the default.
   // Following values from Trinamic's spreadsheet with values for a NEMA17 (42BYGHW609)
@@ -419,7 +458,13 @@
     SERIAL_ECHOPAIR(" Res:",  res);
     SERIAL_ECHOPAIR(" Final GCONF:",  data);
   }
+
+    void tmc2208_adv(TMC2208Stepper &st) {
+      st.en_spreadCycle(true);
+    }
+
 #define _TMC2208_INIT(ST) tmc2208_init(stepper##ST, ST##_MICROSTEPS)
+#define _TMC2208_ADV(ST) tmc2208_adv(stepper##ST)
   void tmc2208_init() {
     #if ENABLED(X_IS_TMC2208)
       _TMC2208_INIT(X);
@@ -441,6 +486,7 @@
     #endif
     #if ENABLED(E0_IS_TMC2208)
       _TMC2208_INIT(E0);
+      _TMC2208_ADV(E0);
     #endif
     #if ENABLED(E1_IS_TMC2208)
       { constexpr int extruder = 1; _TMC2208_INIT(E1, steps_per_mm[E_AXIS_N]); }

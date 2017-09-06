@@ -495,7 +495,7 @@
    *  - SDSORT_CACHE_NAMES will retain the sorted file listing in RAM. (Expensive!)
    *  - SDSORT_DYNAMIC_RAM only uses RAM when the SD menu is visible. (Use with caution!)
    */
-  #define SDCARD_SORT_ALPHA
+//  #define SDCARD_SORT_ALPHA
 
   // SD Card Sorting options
   #if ENABLED(SDCARD_SORT_ALPHA)
@@ -1083,16 +1083,16 @@
   #define INTERPOLATE          1  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #define X_CURRENT         1000  // rms current in mA
-  #define X_MICROSTEPS        32 // FULLSTEP..256
+  #define X_MICROSTEPS        64 // FULLSTEP..256
 
 				//X, Y, Z axes all share a single serial wire attached to pin 63
 				//for these axes readback isn't used.
 
   #define Y_CURRENT         1000
-  #define Y_MICROSTEPS        32
+  #define Y_MICROSTEPS        64
 
   #define Z_CURRENT         1000
-  #define Z_MICROSTEPS        32
+  #define Z_MICROSTEPS        64
 
   //#define X2_CURRENT      1000
   //#define X2_MICROSTEPS     16
@@ -1118,7 +1118,7 @@
   //#define E4_CURRENT      1000
   //#define E4_MICROSTEPS     16
 
-  //#define STEALTHCHOP
+  #define STEALTHCHOP
 
   /**
    * You can set your own advanced settings by filling in predefined functions.
@@ -1131,6 +1131,8 @@
    *   stepperX.interpolate(0); \
    * }
    */
+
+
   #define  TMC2208_ADV() {  }
 
 #endif // ENABLED(HAVE_TMC2208)
